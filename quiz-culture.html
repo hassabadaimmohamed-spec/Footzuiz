@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FootQuiz – Le Quiz Football Ultimate</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00C853;
+    --dark: #0a0e1a;
+    --card: #131929;
+    --accent: #FFD600;
+    --text: #e8eaf6;
+    --muted: #8892b0;
+    --red: #FF3D57;
+  }
+ 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    background-image: radial-gradient(ellipse at 20% 50%, rgba(0,200,83,0.07) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 20%, rgba(255,214,0,0.05) 0%, transparent 50%);
+  }
+ 
+  /* TOP AD BANNER */
+  .ad-banner {
+    width: 100%;
+    background: #1a1f33;
+    border-bottom: 1px solid #222a45;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .ad-banner .ad-box {
+    background: #222a45;
+    border: 1px dashed #3a4466;
+    border-radius: 6px;
+    width: 320px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #4a5580;
+  }
+ 
+  .wrapper {
+    width: 100%;
+    max-width: 560px;
+    padding: 24px 16px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+ 
+  /* HEADER */
+  .header {
+    text-align: center;
+  }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 4px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--green), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+ 
+  /* SCORE BAR */
+  .score-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card);
+    border: 1px solid #1e2840;
+    border-radius: 14px;
+    padding: 14px 20px;
+  }
+  .score-item {
+    text-align: center;
+  }
+  .score-item .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+  .score-item .value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    line-height: 1;
+  }
+  .score-item .value.green { color: var(--green); }
+  .score-item .value.yellow { color: var(--accent); }
+  .score-item .value.white { color: var(--text); }
+ 
+  /* PROGRESS */
+  .progress-wrap {
+    width: 100%;
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #1e2840;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--accent));
+    border-radius: 10px;
+    transition: width 0.5s ease;
+  }
+ 
+  /* QUESTION CARD */
+  .question-card {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid #1e2840;
+    border-radius: 20px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .question-card::before {
+    content: '⚽';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 80px;
+    opacity: 0.04;
+    pointer-events: none;
+  }
+  .question-number {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--green);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .question-text {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--text);
+  }
+ 
+  /* OPTIONS */
+  .options {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option {
+    width: 100%;
+    background: var(--card);
+    border: 1.5px solid #1e2840;
+    border-radius: 14px;
+    padding: 16px 20px;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .option:hover:not(:disabled) {
+    border-color: var(--green);
+    background: rgba(0,200,83,0.06);
+    transform: translateX(4px);
+  }
+  .option .opt-letter {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #1e2840;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .option:hover:not(:disabled) .opt-letter {
+    background: var(--green);
+    color: #000;
+  }
+  .option.correct {
+    border-color: var(--green);
+    background: rgba(0,200,83,0.12);
+  }
+  .option.correct .opt-letter {
+    background: var(--green);
+    color: #000;
+  }
+  .option.wrong {
+    border-color: var(--red);
+    background: rgba(255,61,87,0.1);
+  }
+  .option.wrong .opt-letter {
+    background: var(--red);
+    color: #fff;
+  }
+  .option:disabled { cursor: default; }
+ 
+  /* FEEDBACK */
+  .feedback {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+  .feedback.show { display: flex; }
+  .feedback.correct-fb {
+    background: rgba(0,200,83,0.12);
+    border: 1px solid rgba(0,200,83,0.3);
+    color: var(--green);
+  }
+  .feedback.wrong-fb {
+    background: rgba(255,61,87,0.1);
+    border: 1px solid rgba(255,61,87,0.3);
+    color: var(--red);
+  }
+ 
+  /* NEXT BUTTON */
+  .btn-next {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--green), #00a844);
+    border: none;
+    border-radius: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: none;
+  }
+  .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,200,83,0.3); }
+  .btn-next.show { display: block; }
+ 
+  /* INTERSTITIAL AD (mid-game) */
+  .ad-mid {
+    width: 100%;
+    background: #131929;
+    border: 1px dashed #2a3350;
+    border-radius: 14px;
+    height: 90px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    color: #3a4466;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .ad-mid.show { display: flex; }
+ 
+  /* RESULTS */
+  .results {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid #1e2840;
+    border-radius: 20px;
+    padding: 36px 24px;
+    text-align: center;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .results.show { display: flex; }
+  .results .trophy { font-size: 60px; }
+  .results h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--green), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .results .final-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .results .final-label {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .results .comment {
+    font-size: 16px;
+    color: var(--text);
+    max-width: 320px;
+    line-height: 1.5;
+  }
+  .btn-restart {
+    padding: 16px 40px;
+    background: linear-gradient(135deg, var(--green), #00a844);
+    border: none;
+    border-radius: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-restart:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,200,83,0.3); }
+ 
+  /* AD RESULT */
+  .ad-result {
+    width: 100%;
+    background: #1a1f33;
+    border: 1px dashed #2a3350;
+    border-radius: 12px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    color: #3a4466;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+ 
+  .quiz-section { width: 100%; display: flex; flex-direction: column; gap: 14px; }
+</style>
+</head>
+<body>
+ 
+<!-- TOP AD BANNER -->
+<div class="ad-banner">
+  <span>Publicité</span>
+  <div class="ad-box">📢 Espace publicitaire – 320×50 (Google AdSense)</div>
+</div>
+ 
+<div class="wrapper">
+ 
+  <!-- HEADER -->
+  <div class="header">
+    <h1>FootQuiz</h1>
+    <p>Le Quiz Football Ultimate ⚽</p>
+  </div>
+ 
+  <!-- SCORE BAR -->
+  <div class="score-bar">
+    <div class="score-item">
+      <div class="label">✅ Bonne</div>
+      <div class="value green" id="correct-count">0</div>
+    </div>
+    <div class="score-item">
+      <div class="label">❌ Fausse</div>
+      <div class="value" style="color:var(--red)" id="wrong-count">0</div>
+    </div>
+    <div class="score-item">
+      <div class="label">🏆 Score</div>
+      <div class="value yellow" id="score-display">0</div>
+    </div>
+  </div>
+ 
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span id="q-progress">Question 1 / 10</span>
+      <span id="q-percent">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+ 
+  <!-- QUIZ SECTION -->
+  <div class="quiz-section" id="quiz-section">
+    <div class="question-card">
+      <div class="question-number" id="q-number">Question 1</div>
+      <div class="question-text" id="q-text">Chargement...</div>
+    </div>
+ 
+    <div class="options" id="options"></div>
+ 
+    <div class="feedback" id="feedback"></div>
+ 
+    <!-- MID AD (appears every 5 questions) -->
+    <div class="ad-mid" id="ad-mid">
+      <span>📢</span>
+      <span>Publicité – 320×90 (Google AdSense)</span>
+    </div>
+ 
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Question Suivante →</button>
+  </div>
+ 
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="trophy" id="trophy">🏆</div>
+    <h2>Résultat Final</h2>
+    <div class="final-score" id="final-score">0</div>
+    <div class="final-label">points sur 100</div>
+    <div class="comment" id="final-comment"></div>
+    <div class="ad-result">📢 Publicité de fin – 300×100 (Google AdSense)</div>
+    <button class="btn-restart" onclick="restartGame()">🔄 Rejouer</button>
+  </div>
+ 
+</div>
+ 
+<script>
+const questions = [
+  { q: "Quel pays a remporté la Coupe du Monde 2022 au Qatar ?", opts: ["France", "Argentine", "Brésil", "Croatie"], ans: 1 },
+  { q: "Qui détient le record de buts en Ligue des Champions ?", opts: ["Messi", "Ronaldo", "Raúl", "Benzema"], ans: 1 },
+  { q: "Dans quel club joue Kylian Mbappé depuis 2024 ?", opts: ["PSG", "Real Madrid", "Barcelona", "Bayern Munich"], ans: 1 },
+  { q: "Quel stade est le plus grand du monde (capacité) ?", opts: ["Camp Nou", "Wembley", "Rungrado", "Maracanã"], ans: 2 },
+  { q: "Combien de fois le Brésil a-t-il remporté la Coupe du Monde ?", opts: ["4 fois", "5 fois", "6 fois", "3 fois"], ans: 1 },
+  { q: "Quel joueur surnommé 'CR7' a joué pour Manchester United, Real Madrid et la Juventus ?", opts: ["Cafu", "Cristiano Ronaldo", "Carlos Roa", "Carlos Roberto"], ans: 1 },
+  { q: "En quelle année la France a-t-elle remporté sa première Coupe du Monde ?", opts: ["1994", "1998", "2002", "2006"], ans: 1 },
+  { q: "Quel club a remporté le plus de Ligues des Champions ?", opts: ["Barcelona", "Bayern Munich", "Real Madrid", "Liverpool"], ans: 2 },
+  { q: "Qui a remporté le Ballon d'Or 2023 ?", opts: ["Erling Haaland", "Kylian Mbappé", "Lionel Messi", "Vinicius Jr"], ans: 2 },
+  { q: "Quel pays organise la Coupe du Monde 2026 ?", opts: ["Australie", "USA/Canada/Mexique", "Arabie Saoudite", "Angleterre"], ans: 1 },
+];
+ 
+let current = 0;
+let score = 0;
+let correct = 0;
+let wrong = 0;
+let answered = false;
+ 
+function renderQuestion() {
+  const q = questions[current];
+  document.getElementById('q-number').textContent = `Question ${current + 1}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-progress').textContent = `Question ${current + 1} / ${questions.length}`;
+  const pct = Math.round((current / questions.length) * 100);
+  document.getElementById('q-percent').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+ 
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${opt}`;
+    btn.onclick = () => selectAnswer(i, btn);
+    opts.appendChild(btn);
+  });
+ 
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('btn-next').className = 'btn-next';
+  document.getElementById('ad-mid').className = 'ad-mid';
+  answered = false;
+}
+ 
+function selectAnswer(idx, btn) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const allBtns = document.querySelectorAll('.option');
+  allBtns.forEach(b => b.disabled = true);
+ 
+  const fb = document.getElementById('feedback');
+  if (idx === q.ans) {
+    btn.classList.add('correct');
+    score += 10;
+    correct++;
+    fb.className = 'feedback correct-fb show';
+    fb.textContent = '✅ Bonne réponse ! +10 points';
+  } else {
+    btn.classList.add('wrong');
+    allBtns[q.ans].classList.add('correct');
+    wrong++;
+    fb.className = 'feedback wrong-fb show';
+    fb.textContent = `❌ Faux ! La bonne réponse était : ${q.opts[q.ans]}`;
+  }
+ 
+  document.getElementById('correct-count').textContent = correct;
+  document.getElementById('wrong-count').textContent = wrong;
+  document.getElementById('score-display').textContent = score;
+ 
+  // Show mid ad every 5 questions
+  if ((current + 1) % 5 === 0 && current + 1 < questions.length) {
+    document.getElementById('ad-mid').className = 'ad-mid show';
+  }
+ 
+  document.getElementById('btn-next').className = 'btn-next show';
+  if (current + 1 >= questions.length) {
+    document.getElementById('btn-next').textContent = 'Voir mes résultats 🏆';
+  }
+}
+ 
+function nextQuestion() {
+  current++;
+  if (current >= questions.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+ 
+function showResults() {
+  document.getElementById('quiz-section').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+  const res = document.getElementById('results');
+  res.className = 'results show';
+  document.getElementById('final-score').textContent = score;
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('q-percent').textContent = '100%';
+ 
+  let trophy, comment;
+  if (score >= 90) { trophy = '🏆'; comment = 'Incroyable ! Tu es un vrai expert du football !'; }
+  else if (score >= 70) { trophy = '⭐'; comment = 'Très bien joué ! Tu t\'y connais vraiment bien.'; }
+  else if (score >= 50) { trophy = '👍'; comment = 'Pas mal ! Mais tu peux encore t\'améliorer.'; }
+  else { trophy = '📚'; comment = 'Continue à apprendre, le football n\'a plus de secrets pour toi bientôt !'; }
+ 
+  document.getElementById('trophy').textContent = trophy;
+  document.getElementById('final-comment').textContent = comment;
+}
+ 
+function restartGame() {
+  current = 0; score = 0; correct = 0; wrong = 0;
+  document.getElementById('correct-count').textContent = 0;
+  document.getElementById('wrong-count').textContent = 0;
+  document.getElementById('score-display').textContent = 0;
+  document.getElementById('results').className = 'results';
+  document.getElementById('quiz-section').style.display = 'flex';
+  document.getElementById('progress-wrap').style.display = 'block';
+  renderQuestion();
+}
+ 
+renderQuestion();
+</script>
+</body>
+</html>
+ 
